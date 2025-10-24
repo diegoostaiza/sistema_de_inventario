@@ -1,0 +1,152 @@
+{% extends "inventario_principal/base.html" %}
+
+{% block titulo %}Listado de Provincias{% endblock titulo %}
+
+{% block contenido %}
+<div class="mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Provincias</h1>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb" style="background-color: transparent; padding: 0; margin: 0;">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard:inicio' %}">Inicio</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Provincias</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center card-csslist">
+        <h6 class="m-0 font-weight-bold text-primary h5"><i class="fas fa-list mr-2"></i>Lista de Provincias</h6>
+    </div>
+    <div class="card-body">
+        <div class="d-flex justify-content-between mb-3">
+            <div style="width: 20px;"></div>
+          
+            <button onclick="">
+                <i class="fas fa-plus-circle"></i> Registrar Provincia
+            </button>
+       
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Nombre Provincia</th>
+                        <th>Ciudades</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prov in provincias %}
+                    <tr>
+                        <td>{{ prov.nombre_provincia }}</td>
+                        <td class="text-center">
+                            <div class="d-flex">
+                                {% if perms.ubicaciones.crear_ciudad %}
+                                <button class="btn btn-info btn-sm mr-1"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="top"
+                                        title="Agregar Ciudad"
+                                        onclick="">
+                                    <i class="fas fa-city fa-sm"></i>
+                                </button>
+                                {% endif %}
+                                {% if perms.ubicaciones.ver_ciudades %}
+                                <button class="btn btn-secondary btn-sm"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="top"
+                                        title="Ver Ciudades"
+                                        onclick="abrir_modal_ver_ciudades('')">
+                                    <i class="fas fa-eye fa-sm"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <div class="d-flex">
+                                {% if perms.ubicaciones.editar_provincia %}
+                                <button class="btn btn-primary btn-sm mr-1"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="top"
+                                        title="Editar Provincia"
+                                        onclick="abrir_modal_editar('')">
+                                    <i class="fas fa-pencil-alt fa-sm"></i>
+                                </button>
+                                {% endif %}
+                                {% if perms.ubicaciones.eliminar_provincia %}
+                                <button class="btn btn-danger btn-sm"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="top"
+                                        title="Eliminar Provincia"
+                                        onclick="Eliminar_Provincia({{ prov.idprovincia }})">
+                                    <i class="fas fa-trash fa-sm"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="nuevo" role="dialog"></div>
+<div class="modal fade" id="editar" role="dialog"></div>
+<div class="modal fade" id="ver" role="dialog"></div>
+{% endblock contenido %}
+
+{% block script %}
+<script>
+    function Eliminar_Provincia(id){
+        Swal.fire({
+            title: "¿Estás seguro de eliminar?",
+            text: "Esta acción no se puede deshacer",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Aceptar",
+            cancelButtonText: "Cancelar",
+            confirmButtonColor: "#4169E1"
+        }).then(function(result){
+            if(result.isConfirmed){
+                window.location.href = "/emppresa/eliminar_provincia/"+id+"/"
+            }
+        });
+    }
+
+    {% if messages %}
+        {% for m in messages %}
+            Swal.fire({
+                title: "{{m}}",
+                icon: "{{ m.tags }}",
+                confirmButtonText: "Aceptar",
+                confirmButtonColor: "#4169E1"
+            });
+        {% endfor %}
+    {% endif %}
+
+    function abrir_modal_nuevo(url){
+        $('#nuevo').load(url, function(){
+            $(this).modal('show');
+        })
+    }
+
+    function abrir_modal_editar(url){
+        $('#editar').load(url, function(){
+            $(this).modal('show');
+        })
+    }
+
+    function abrir_modal_ciudad(url){
+        $('#nuevo').load(url, function(){
+            $(this).modal('show');
+        })
+    }
+
+    function abrir_modal_ver_ciudades(url){
+        $('#ver').load(url, function(){
+            $(this).modal('show');
+        })
+    }
+</script>
+{% endblock script %}

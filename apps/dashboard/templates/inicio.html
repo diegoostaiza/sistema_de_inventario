@@ -1,0 +1,661 @@
+{% extends "inventario_principal/base.html" %}
+
+{% block titulo %}Inventario Otavalo{% endblock titulo %}
+
+{% block contenido %}
+<!-- Page Heading -->
+<div class="mb-4">
+    <h1 class="h3 mb-0 text-gray-800"><strong>Dashboard</strong></h1>
+   
+</div>
+
+
+<!-- Content Row -->
+<div class="row">
+
+   <div class="row">
+    <!-- Sección de 6 tarjetas (izquierda) -->
+    <div class="col-xl-6 col-lg-6">
+        <div class="row">
+    <!-- Card Productos -->
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card bg-gradient-success text-white h-100 border-0 shadow-lg">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase mb-1 text-white">Prendas</h6>
+                        <h2 class="mb-0">{{ total_articulos }}</h2>
+                    </div>
+                    <div class="icon-shape bg-white text-success rounded-circle p-3">
+                       <i class="fas fa-tshirt fa-lg"></i>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <span class="text-white small">Total en inventario</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Compras -->
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card bg-gradient-warning text-white h-100 border-0 shadow-lg">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase mb-1 text-white">Compras</h6>
+                        <h2 class="mb-0">{{ total_compras }}</h2>
+                    </div>
+                    <div class="icon-shape bg-white text-warning rounded-circle p-3">
+                        <i class="fas fa-shopping-cart fa-lg"></i>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <span class="text-white small">Total registradas</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Ventas -->
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card bg-gradient-info text-white h-100 border-0 shadow-lg">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase mb-1 text-white">Ventas</h6>
+                        <h2 class="mb-0">{{ total_ventas }}</h2>
+                    </div>
+                    <div class="icon-shape bg-white text-info rounded-circle p-3">
+                        <i class="fas fa-dollar-sign fa-lg"></i>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <span class="text-white small">Total registradas</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Existencia Total -->
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card bg-gradient-dark text-white h-100 border-0 shadow-lg">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase mb-1 text-white">Existencia Total</h6>
+                        <h2 class="mb-0">{{ total_existencia_total }}</h2>
+                    </div>
+                    <div class="icon-shape bg-white text-dark rounded-circle p-3">
+                        <i class="fas fa-warehouse fa-lg"></i>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <span class="text-white small">Unidades en stock</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Existencia Actual -->
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card bg-gradient-primary text-white h-100 border-0 shadow-lg">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase mb-1 text-white">Existencia Actual</h6>
+                        <h2 class="mb-0">{{ total_existencia_actual }}</h2>
+                    </div>
+                    <div class="icon-shape bg-white text-primary rounded-circle p-3">
+                        <i class="fas fa-box fa-lg"></i>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <span class="text-white small">Unidades disponibles</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Ventas Mensual -->
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card bg-gradient-danger text-white h-100 border-0 shadow-lg">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase mb-1 text-white">Ventas (Mes)</h6>
+                        <h2 class="mb-0">${{ ganancias_m }}</h2>
+                    </div>
+                    <div class="icon-shape bg-white text-danger rounded-circle p-3">
+                        <i class="fas fa-calendar fa-lg"></i>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <span class="text-white small">Total este mes</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+
+    <!-- Gráfica (derecha) -->
+    <div class="col-xl-6 col-lg-6">
+        <div class="card shadow mb-4 h-100">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-chart-line mr-2"></i>Desempeño de Ventas Anual</h6>
+                <div class="d-flex align-items-center">
+                    <i id="exportBtnArea" class="fas fa-image expand-icon mr-2" style="cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="Exportar Imagen"></i>
+                    <i class="fas fa-expand-arrows-alt expand-icon" style="cursor: pointer;" onclick="toggleFullscreen(this)" data-bs-toggle="tooltip" data-bs-placement="top" title="Pantalla Completa"></i>
+                </div>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="chart-area">
+                    <canvas id="AreaChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- Area Ultimas 10 ventas -->
+    <div class="col-xl-6 col-lg-7">
+    <div class="card border-0 shadow-lg h-100">
+        <!-- Encabezado Rediseñado -->
+        <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between border-0">
+            <div>
+                <h5 class="m-0 text-dark font-weight-bold">
+                    <i class="fas fa-receipt text-primary mr-2"></i>
+                    Historial Reciente de Ventas
+                </h5>
+                <p class="text-muted small mb-0 mt-1">Últimas 10 transacciones registradas</p>
+            </div>
+            <button class="btn btn-sm btn-light" onclick="toggleFullscreen(this.closest('.card'))" 
+                    data-bs-toggle="tooltip" title="Pantalla completa">
+                <i class="fas fa-expand"></i>
+            </button>
+        </div>
+
+        <!-- Cuerpo de Tabla Mejorado -->
+        <div class="card-body pt-0">
+            <div class="table-responsive rounded-lg">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="text-uppercase text-secondary text-xs font-weight-bolder ps-3">#</th>
+                            <th class="text-uppercase text-secondary text-xs font-weight-bolder">Cliente</th>
+                            <th class="text-uppercase text-secondary text-xs font-weight-bolder">Fecha</th>
+                            <th class="text-uppercase text-secondary text-xs font-weight-bolder text-end">Subtotal</th>
+                            <th class="text-uppercase text-secondary text-xs font-weight-bolder text-end pe-3">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ul in ultima10_ventas %}
+                        <tr class="border-bottom">
+                            <td class="text-sm ps-3">
+                                <span class="badge text-primary">{{ forloop.counter }}</span>
+                            </td>
+                            <td class="text-sm">
+                                <a href="{% url 'ventas:listado_ventas' %}" class="text-dark font-weight-bold">
+                                    {{ ul.idcliente }}
+                                </a>
+                            </td>
+                            <td class="text-sm">
+                                <span class="text-muted">{{ ul.fecha_venta | date:"d/m/Y" }}</span>
+                            </td>
+                            <td class="text-sm text-end">
+                                <span class="text-success font-weight-bold">${{ ul.subtotal }}</span>
+                            </td>
+                            <td class="text-sm text-end pe-3">
+                                <span class="text-primary font-weight-bold">${{ ul.total }}</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pie de tabla opcional -->
+            <div class="mt-3 text-end">
+                <a href="{% url 'ventas:listado_ventas' %}" class="btn btn-sm btn-outline-primary">
+                    Ver todas las ventas <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <!-- Area Productos Vendidos -->
+    {% comment %} <div class="col-xl-6 col-lg-7">
+        <div class="card shadow mb-4 card-csslist">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-box-open mr-2"></i>Productos más Vendidos (Año Actual)</h6>
+                <i class="fas fa-expand-arrows-alt expand-icon" style="cursor: pointer;" onclick="toggleFullscreen(this)"></i>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <table class="table table-borderless datatable">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Producto</th>
+                            <th scope="col">Precio</th>
+                            <th scope="col">Vendido</th>
+                            <th scope="col">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for art_ven in articulos_vendidos %}
+                        <tr>
+                            <th scope="row"><a href="#">{{ forloop.counter }}</a></th>
+                            <td><a href="{% url 'ventas:listado_ventas' %}" class="text-primary">{{ art_ven.codigoarticulo__descripcion_articulo }}</a></td>
+                            <td>$ {{ art_ven.preciounitario }}</td>
+                            <td>{{ art_ven.cantidad_vendida }}</td>
+                            <td>$ {{ art_ven.total_vendido }}</td>
+
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div> {% endcomment %}
+
+   <!-- Gráfica de Productos Destacados - Versión Mejorada -->
+<div class="col-xl-6 col-lg-7">
+    <div class="card border-0 shadow-lg h-100">
+        <!-- Encabezado Rediseñado -->
+        <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between border-0">
+            <div>
+                <h5 class="m-0 text-dark font-weight-bold">
+                    <i class="fas fa-trophy text-warning mr-2"></i>
+                    Productos Estrella
+                </h5>
+                <p class="text-muted small mb-0 mt-1">Distribución de ventas por producto (2025)</p>
+            </div>
+            <div class="dropdown">
+                <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="chartDropdown" data-bs-toggle="dropdown">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow">
+                    <li><a class="dropdown-item" href="#" id="exportBtnPie"><i class="fas fa-file-image mr-2"></i>Exportar Imagen</a></li>
+                    <li><a class="dropdown-item" href="#" id="exportDataPie"><i class="fas fa-file-csv mr-2"></i>Exportar Datos</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" onclick="toggleFullscreen(this.closest('.card'))"><i class="fas fa-expand mr-2"></i>Pantalla completa</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Cuerpo del Gráfico Mejorado -->
+        <div class="card-body">
+            <div class="chart-container position-relative" style="height: 300px;">
+                <canvas id="PieChart"></canvas>
+                
+                <!-- Indicador de porcentaje central (opcional) -->
+                <div class="chart-center-label d-flex flex-column align-items-center justify-content-center">
+                    <h4 class="mb-0 font-weight-bold text-primary" id="totalPercentage">100%</h4>
+                    <small class="text-muted">Total Ventas</small>
+                </div>
+            </div>
+            
+            <div class="chart-legend mt-4 px-3">
+                <div class="row g-3" id="pieLegend">
+                    <!-- Los elementos de leyenda se generarán aquí -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.chart-container {
+    position: relative;
+    min-height: 280px;
+    margin: 0 auto 20px;
+}
+
+.chart-center-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.legend-item {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.legend-item:last-child {
+    border-bottom: none;
+}
+
+.legend-color {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    margin-right: 8px;
+}
+
+.legend-text {
+    font-size: 0.85rem;
+}
+
+.percentage-value {
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+.total-value {
+    color: #28a745;
+    font-weight: bold;
+}
+</style>
+
+    
+</div>
+{% endblock contenido %}
+
+{% block script %}
+    <!-- Script Area Chart resumen ventas -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var ctx = document.getElementById("AreaChart").getContext('2d');
+            var ganancias_mensuales = JSON.parse('{{ resumen_ganancias|escapejs }}');
+            var meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            var myLineChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: meses,
+                    datasets: [{
+                        label: "Ganancias Mensuales",
+                        lineTension: 0.3,
+                        backgroundColor: "rgba(78, 115, 223, 0.05)",
+                        borderColor: "rgba(78, 115, 223, 1)",
+                        pointRadius: 3,
+                        pointBackgroundColor: "rgba(78, 115, 223, 1)",
+                        pointBorderColor: "rgba(78, 115, 223, 1)",
+                        pointHoverRadius: 3,
+                        pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+                        pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+                        pointHitRadius: 10,
+                        pointBorderWidth: 2,
+                        data: ganancias_mensuales,
+                    }],
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    layout: {
+                        padding: {
+                            left: 10,
+                            right: 25,
+                            top: 25,
+                            bottom: 0
+                        }
+                    },
+                    scales: {
+                        xAxes: [{
+                            time: {
+                                unit: 'date'
+                            },
+                            gridLines: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                maxTicksLimit: 12
+                            }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                maxTicksLimit: 5,
+                                padding: 10,
+                                callback: function (value, index, values) {
+                                    return '$' + number_format(value);
+                                }
+                            },
+                            gridLines: {
+                                color: "rgb(234, 236, 244)",
+                                zeroLineColor: "rgb(234, 236, 244)",
+                                drawBorder: false,
+                                borderDash: [2],
+                                zeroLineBorderDash: [2]
+                            }
+                        }],
+                    },
+                    legend: {
+                        display: false
+                    },
+                    tooltips: {
+                        backgroundColor: "rgb(255,255,255)",
+                        bodyFontColor: "#858796",
+                        titleMarginBottom: 10,
+                        titleFontColor: '#6e707e',
+                        titleFontSize: 14,
+                        borderColor: '#dddfeb',
+                        borderWidth: 1,
+                        xPadding: 15,
+                        yPadding: 15,
+                        displayColors: false,
+                        caretPadding: 10,
+                        callbacks: {
+                            label: function (tooltipItem, chart) {
+                                var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+                                return datasetLabel + ': $' + number_format(tooltipItem.yLabel);
+                            }
+                        }
+                    }
+                }
+            });
+            // Exportar la gráfica a imagen
+            document.getElementById('exportBtnArea').addEventListener('click', function () {
+                // Obtener la imagen en base64
+                var image = myLineChart.toBase64Image();
+                var link = document.createElement('a');
+                link.href = image;
+                link.download = 'grafica.png'; // Nombre del archivo
+                link.click();
+            });
+
+        });
+    </script>
+
+    <script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Datos y configuración
+    const productosVendidos = JSON.parse('{{ articulos_vendidos|escapejs }}');
+    const nombresProductos = productosVendidos.map(p => p.descripcion);
+    const cantidadesVendidas = productosVendidos.map(p => p.cantidad_vendida);
+    const totalesVendidos = productosVendidos.map(p => p.total_vendido);
+    const totalGeneral = cantidadesVendidas.reduce((a, b) => a + b, 0);
+    
+    // Paleta de colores mejorada
+    const colores = [
+        '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b',
+        '#5a5c69', '#858796', '#3a3b45', '#6f42c1', '#20c997'
+    ];
+    
+    // Configuración del gráfico
+    const ctx = document.getElementById('PieChart').getContext('2d');
+    const myPieChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: nombresProductos,
+            datasets: [{
+                data: cantidadesVendidas,
+                backgroundColor: colores,
+                borderColor: '#fff',
+                borderWidth: 2,
+                hoverBorderColor: '#fff',
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    enabled: true,
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.raw || 0;
+                            const total = totalesVendidos[context.dataIndex] || 0;
+                            const percentage = ((value / totalGeneral) * 100).toFixed(1);
+                            return `${label}: ${value} unidades (${percentage}%) | Total: $${total.toLocaleString()}`;
+                        }
+                    }
+                }
+            },
+            animation: {
+                animateScale: true,
+                animateRotate: true
+            }
+        }
+    });
+    
+    // Crear leyenda interactiva personalizada
+    function createCustomLegend() {
+        const legendContainer = document.getElementById('pieLegend');
+        legendContainer.innerHTML = '';
+        
+        nombresProductos.forEach((label, i) => {
+            const percentage = ((cantidadesVendidas[i] / totalGeneral) * 100).toFixed(1);
+            const total = totalesVendidos[i];
+            
+            const legendItem = document.createElement('div');
+            legendItem.className = 'col-6 col-md-4 mb-3';
+            legendItem.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <span class="legend-color" style="background-color: ${colores[i]};"></span>
+                    <div class="ms-2">
+                        <div class="d-flex justify-content-between">
+                            <span class="text-sm font-weight-bold">${label}</span>
+                            <span class="text-sm text-muted">${percentage}%</span>
+                        </div>
+                        <div class="progress mt-1" style="height: 4px;">
+                            <div class="progress-bar" role="progressbar" 
+                                 style="width: ${percentage}%; background-color: ${colores[i]};"></div>
+                        </div>
+                        <small class="text-success font-weight-bold d-block">$${total.toLocaleString()}</small>
+                    </div>
+                </div>
+            `;
+            
+            // Hacer la leyenda interactiva
+            legendItem.addEventListener('click', () => {
+                const meta = myPieChart.getDatasetMeta(0);
+                meta.data[i].hidden = !meta.data[i].hidden;
+                myPieChart.update();
+            });
+            
+            legendContainer.appendChild(legendItem);
+        });
+    }
+    
+    // Actualizar porcentaje central
+    function updateCenterLabel() {
+        document.getElementById('totalPercentage').textContent = '100%';
+    }
+    
+    // Exportar funciones
+    document.getElementById('exportBtnPie').addEventListener('click', function(e) {
+        e.preventDefault();
+        const link = document.createElement('a');
+        link.href = myPieChart.toBase64Image('image/png', 1);
+        link.download = `productos-destacados-${new Date().getFullYear()}.png`;
+        link.click();
+    });
+    
+    document.getElementById('exportDataPie').addEventListener('click', function(e) {
+        e.preventDefault();
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "Producto,Cantidad Vendida,Porcentaje,Total Vendido\n";
+        
+        nombresProductos.forEach((label, i) => {
+            const percentage = ((cantidadesVendidas[i] / totalGeneral) * 100).toFixed(2);
+            csvContent += `"${label}",${cantidadesVendidas[i]},${percentage}%,$${totalesVendidos[i]}\n`;
+        });
+        
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "productos-destacados.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+    
+    // Inicializar componentes
+    createCustomLegend();
+    updateCenterLabel();
+});
+</script>
+
+    <!-- Alternar cards en Pantalla completa -->
+    <script>
+        // Función para alternar la pantalla completa
+        function toggleFullscreen(icon) {
+            const card = icon.closest('.card'); // Obtiene la tarjeta más cercana al ícono
+
+            if (!document.fullscreenElement) {
+                // Si no está en pantalla completa, entra en pantalla completa
+                if (card.requestFullscreen) {
+                    card.requestFullscreen();
+                } else if (card.mozRequestFullScreen) { // Firefox
+                    card.mozRequestFullScreen();
+                } else if (card.webkitRequestFullscreen) { // Chrome, Safari y Opera
+                    card.webkitRequestFullscreen();
+                } else if (card.msRequestFullscreen) { // IE/Edge
+                    card.msRequestFullscreen();
+                }
+            } else {
+                // Si ya está en pantalla completa, sale de pantalla completa
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.mozCancelFullScreen) { // Firefox
+                    document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) { // Chrome, Safari y Opera
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) { // IE/Edge
+                    document.msExitFullscreen();
+                }
+            }
+        }
+
+        // Escuchar el evento de cambio de pantalla completa
+        document.addEventListener('fullscreenchange', () => {
+            const icons = document.querySelectorAll('.expand-icon'); // Selecciona todos los íconos
+
+            icons.forEach(icon => {
+                if (!document.fullscreenElement) {
+                    // Si se sale de pantalla completa, cambiar el ícono a "expandir"
+                    icon.classList.remove('fa-compress-arrows-alt');
+                    icon.classList.add('fa-expand-arrows-alt');
+                } else {
+                    // Si se entra en pantalla completa, cambiar el ícono a "comprimir"
+                    icon.classList.remove('fa-expand-arrows-alt');
+                    icon.classList.add('fa-compress-arrows-alt');
+                }
+            });
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
+{% endblock script %}

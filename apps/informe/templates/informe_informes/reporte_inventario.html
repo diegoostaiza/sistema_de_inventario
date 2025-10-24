@@ -1,0 +1,113 @@
+{% extends "inventario_principal/base.html" %}
+
+{% block titulo %}Reporte de Inventario{% endblock titulo %}
+
+{% block contenido %}
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-primary text-white d-flex align-items-center">
+        <i class="fas fa-boxes mr-2"></i>
+        <span class="font-weight-bold h5 mb-0">Consultar Reporte de Inventario</span>
+    </div>
+    <div class="card-body">
+        {% load crispy_forms_tags %}
+        <form id="reportForm" method="GET" action="{% url 'informe:generar_pdf_inventarios' 'False' %}">
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    {{ inventarios_filter.form.idcategoriaarticulo|as_crispy_field }}
+                </div>
+                <div class="form-group col-md-4">
+                    {{ inventarios_filter.form.descripcion_articulo|as_crispy_field }}
+                </div>
+                <div class="form-group col-md-4">
+                    {{ inventarios_filter.form.estado_articulo|as_crispy_field }}
+                </div>
+            </div>
+
+            <div class="mt-3 d-flex flex-wrap justify-content-start gap-2">
+                <button type="submit" class="btn btn-dark btn-sm btnGenerarPDF">
+                    <i class="fas fa-file-pdf"></i> Generar Reporte
+                </button>
+                <button type="button" class="btn btn-info btn-sm btnDescargarPDF">
+                    <i class="fas fa-download"></i> Descargar Reporte
+                </button>
+                <a href="{{ request.path }}" class="btn btn-warning btn-sm">
+                    <i class="fas fa-sync-alt"></i> Limpiar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock contenido %}
+
+{% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Función para abrir reporte
+        function openReportWindow(download = false) {
+            const form = document.getElementById('reportForm');
+            let url = "{% url 'informe:generar_pdf_inventarios' 'False' %}";
+            const params = new URLSearchParams(new FormData(form)).toString();
+
+            if (download) {
+                url = url.replace('False', 'True');
+                window.location.href = url + '?' + params;
+            } else {
+                window.open(url + '?' + params, '_blank', 
+                    'scrollbars=yes,resizable=yes,width=800,height=600,top=100,left=100');
+            }
+        }
+
+        // Eventos para los botones
+        document.querySelector('.btnGenerarPDF').addEventListener('click', function(e) {
+            e.preventDefault();
+            openReportWindow(false);
+        });
+
+        document.querySelector('.btnDescargarPDF').addEventListener('click', function(e) {
+            e.preventDefault();
+            openReportWindow(true);
+        });
+
+        // Select dinámico de productos por categoría
+        $('#id_idcategoriaarticulo').change(function() {
+            const categoriaId = $(this).val();
+            const $productoSelect = $('#id_descripcion_articulo');
+
+            $.ajax({
+                url: "{% url 'informe:get_productos_por_categoria' %}",
+                data: { 'categoria_id': categoriaId },
+                success: function(data) {
+                    $productoSelect.empty().append(
+                        '<option value="">Todos los productos</option>'
+                    );
+                    
+                    $.each(data, function(index, producto) {
+                        $productoSelect.append(
+                            $('<option></option>').val(producto.idarticulo)
+                                .text(producto.descripcion_articulo)
+                        );
+                    });
+                }
+            });
+        });
+    });
+</script>
+
+<!-- Estilos adicionales para selectores -->
+<style>
+.select2-container--default .select2-selection--single {
+    height: calc(1.5em + 0.75rem + 2px);
+    padding: 0.375rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: calc(1.5em + 0.75rem + 2px);
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 1.5;
+}
+</style>
+{% endblock script %}

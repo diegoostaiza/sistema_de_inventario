@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de KARDEX</title>
+    <style type="text/css">
+        body {
+            font-family: 'Helvetica', sans-serif;
+            margin: 0;
+            padding: 20px;
+            font-size: 12px;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+
+        .header {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .header-info {
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .header-info h2 {
+            margin: 0 0 -10px 0;
+            font-size: 19px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .header-info p {
+            margin: -10px 0;
+            font-size: 12px;
+            color: #555;
+            line-height: 1.2;
+        }
+
+        .header-logo {
+            text-align: right;
+            vertical-align: top;
+        }
+
+        .header-logo img {
+            height: 80px;
+            width: auto;
+        }
+
+        .header-logo p {
+            margin: 5px 0 0 0;
+            font-size: 11px;
+            color: #555;
+            text-align: right;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 18px;
+            color: #2c3e50;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: #2c3e50;
+            color: #fff;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .fechas {
+            margin-bottom: 10px;
+            text-align: left;
+            font-size: 12px;
+            color: #555;
+            padding-left: 10px;
+        }
+
+        .fechas p {
+            margin: 0;
+        }
+
+        /* Estilos específicos para la tabla de información del producto */
+        table.info-producto {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table.info-producto th,
+        table.info-producto td {
+            padding: 4px;
+            text-align: center;
+            vertical-align: middle;
+            border: 1px solid #ddd;
+        }
+
+        table.info-producto th {
+            background-color: #2c3e50;
+            color: #fff;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        table.info-producto td {
+            background-color: #f9f9f9;
+            color: #333;
+            font-size: 12px;
+        }
+
+        /* Estilos específicos para la segunda tabla */
+        table.kardex {
+            border: 1px solid #ddd;
+        }
+
+        table.kardex th, table.kardex td {
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <table class="header-table">
+            <tr>
+                <td class="header-info">
+                    <h2>{{ empresa.nombrecomercial }}</h2>
+                    <p><strong>RAZÓN SOCIAL:</strong> {{ empresa.razonsocial }}</p>
+                    <p><strong>RUC:</strong> {{ empresa.RUC }}</p>
+                    <p><strong>Teléfono:</strong> {{ empresa.telefono_empresa }}</p>
+                    <p><strong>Email:</strong> {{ empresa.correo_empresa }}</p>
+                </td>
+                <td class="header-logo">
+                    {% if logo_url %}
+                        <img src="{{ logo_url }}" alt="Logo de la empresa" />
+                    {% endif %}
+                    <p><strong>Generado el:</strong> {{ now }}</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <h1>REPORTE DE KARDEX DE PRODUCTO</h1>
+
+    <div id="fechas">
+        <p>
+            <strong>DESDE:</strong>
+            {% if fecha_kardex_desde %}
+                {{ fecha_kardex_desde | date:"d/m/Y" }}
+            {% else %}
+                No especificado
+            {% endif %}
+            <strong>HASTA:</strong>
+            {% if fecha_kardex_hasta %}
+                {{ fecha_kardex_hasta | date:"d/m/Y" }}
+            {% else %}
+                No especificado
+            {% endif %}
+        </p>
+    </div>
+    
+    <table class="info-producto">
+        <thead>
+            <tr>
+                <th>CÓDIGO:</th>
+                <td>{{ articulo_obj.codigoarticulo }}</td>
+                <th>PRODUCTO:</th>
+                <td>{{ articulo_obj.descripcion_articulo }}</td>
+                <th>MÉTODO:</th>
+                <td>
+                    {% if metodo == 'peps' %}
+                        PEPS
+                    {% else %}
+                        Promedio Ponderado
+                    {% endif %}
+                </td>
+            </tr>
+        </thead>
+    </table>
+
+    <table class="kardex">
+        <thead>
+            <tr>
+                <th rowspan="2">FECHA</th>
+                <th rowspan="2">DETALLE</th>
+                <th colspan="3">ENTRADAS</th>
+                <th colspan="3">SALIDAS</th>
+                <th colspan="3">EXISTENCIAS</th>
+            </tr>
+            <tr>
+                <th>C</th>
+                <th>C./U</th>
+                <th>C./T</th>
+                <th>C</th>
+                <th>C./U</th>
+                <th>C./T</th>
+                <th>C</th>
+                <th>C./U</th>
+                <th>C./T</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for kar in kardex %}
+                <tr>
+                    <td>{{ kar.fecha | date:"d/m/Y" }}</td>
+                    <td>{{ kar.detalle }}</td>
+                    <td>{{ kar.entradas }}</td>
+                    <td>{{ kar.vr_unitario_entradas }}</td>
+                    <td>{{ kar.vr_total_entradas }}</td>
+                    <td>{{ kar.salidas }}</td>
+                    <td>{{ kar.vr_unitario_salidas }}</td>
+                    <td>{{ kar.vr_total_salidas }}</td>
+                    <td>{{ kar.saldos }}</td>
+                    <td>{{ kar.vr_unitario_saldos }}</td>
+                    <td>{{ kar.total }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

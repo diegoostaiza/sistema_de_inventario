@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Ventas</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 30px;
+            font-size: 13px;
+            color: #2e2e2e;
+            background-color: #ffffff;
+        }
+
+        .header {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #bbb;
+        }
+
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .header-info h2 {
+            margin: 0;
+            font-size: 22px;
+            color: #333;
+        }
+
+        .header-info p,
+        .header-logo p {
+            margin: 4px 0;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .header-logo {
+            text-align: right;
+        }
+
+        .header-logo img {
+            height: 70px;
+            margin-bottom: 5px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 20px;
+            color: #444;
+            margin: 30px 0 15px 0;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+        }
+
+        #fechas {
+            font-size: 12px;
+            margin-bottom: 20px;
+            padding-left: 5px;
+        }
+
+        #fechas p {
+            margin: 3px 0;
+            line-height: 1.4;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 7px;
+            text-align: center;
+        }
+
+        table th {
+            background-color: #444;
+            color: #fff;
+            font-size: 12px;
+        }
+
+        table tbody tr:nth-child(even) {
+            background-color: #f6f6f6;
+        }
+
+        .total-row {
+            background-color: #333;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .sin-registros {
+            background-color: #f8d7da;
+            color: #721c24;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <table class="header-table">
+            <tr>
+                <td class="header-info">
+                    <h2>{{ empresa.nombrecomercial }}</h2>
+                    <p><strong>Razón Social:</strong> {{ empresa.razonsocial }}</p>
+                    <p><strong>RUC:</strong> {{ empresa.RUC }}</p>
+                    <p><strong>Teléfono:</strong> {{ empresa.telefono_empresa }}</p>
+                    <p><strong>Email:</strong> {{ empresa.correo_empresa }}</p>
+                </td>
+                <td class="header-logo">
+                    {% if logo_url %}
+                        <img src="{{ logo_url }}" alt="Logo de la empresa" />
+                    {% endif %}
+                    <p><strong>Generado el:</strong> {{ now }}</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <h1>Reporte de Ventas</h1>
+
+  
+
+    <table class="ventas">
+        <thead>
+            <tr>
+                <th>Nro</th>
+                <th>Fecha</th>
+                <th>Cliente</th>
+                <th>ID</th>
+                <th>Subtotal</th>
+                <th>Descuento</th>
+                <th>IVA</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if ventas and totales %}
+                {% for ven in ventas %}
+                    <tr>
+                        <td>{{ ven.idventa }}</td>
+                        <td>{{ ven.fecha_venta | date:"d/m/Y" }}</td>
+                        <td>{{ ven.idcliente }}</td>
+                        <td>{{ ven.idcliente.numerodocumento }}</td>
+                        <td>$ {{ ven.subtotal }}</td>
+                        <td>$ {{ ven.descuento }}</td>
+                        <td>$ {{ ven.valoriva }}</td>
+                        <td>$ {{ ven.total }}</td>
+                    </tr>
+                {% endfor %}
+                <tr class="total-row">
+                    <td colspan="4">TOTAL GENERAL</td>
+                    <td>$ {{ totales.subtotal_general }}</td>
+                    <td>$ {{ totales.descuento_general }}</td>
+                    <td>$ {{ totales.iva_general }}</td>
+                    <td>$ {{ totales.total_general }}</td>
+                </tr>
+            {% else %}
+                <tr class="sin-registros">
+                    <td colspan="8"><strong>No se encontraron resultados.</strong></td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</body>
+</html>

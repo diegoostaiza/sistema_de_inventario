@@ -1,0 +1,170 @@
+{% extends "inventario_principal/base.html" %}
+
+{% block titulo %}Registrar Compras{% endblock titulo %}
+
+{% block contenido %}
+<div class="container mt-4">
+    <h1 class="h3 mb-4">Registrar Compra</h1>
+    <form method="post" id="formCompra">
+        {% csrf_token %}
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="proveedor" class="form-label">Proveedor</label>
+                <select class="form-select" name="proveedor" id="proveedor" required>
+                    <option value="" disabled selected>Seleccione un proveedor</option>
+                    {% for proveedor in lis_proveedores %}
+                        <option value="{{ proveedor.idproveedor }}">{{ proveedor.nombre_proveedor }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="fecha_entrada" class="form-label">Fecha de Compra</label>
+                <input type="date" name="fecha_entrada" class="form-control" required>
+            </div>
+            <div class="col-md-3">
+                <label for="comconcepto" class="form-label">Concepto</label>
+                <input type="text" name="comconcepto" class="form-control">
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalAgregarProducto">
+                <i class="fas fa-plus"></i> Agregar Producto
+            </button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered" id="com_detalleProductosTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>Producto</th>
+                        <th>Talla</th>
+                        <th>P. Unitario</th>
+                        <th>Valor</th>
+                        <th>Eliminar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Se llenará con JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <hr>
+
+        <div class="row">
+            <div class="col-md-3">
+                <label for="comsubtotal0" class="form-label">Subtotal Tarifa 0</label>
+                <input type="number" step="0.01" name="comsubtotal0" class="form-control" readonly>
+            </div>
+            <div class="col-md-3">
+                <label for="comsubtotal12" class="form-label">Subtotal Tarifa 12</label>
+                <input type="number" step="0.01" name="comsubtotal12" class="form-control" readonly>
+            </div>
+            <div class="col-md-2">
+                <label for="comvaloriva" class="form-label">IVA</label>
+                <input type="number" step="0.01" name="comvaloriva" class="form-control" readonly>
+            </div>
+            <div class="col-md-2">
+                <label for="comsubtotal" class="form-label">Subtotal</label>
+                <input type="number" step="0.01" name="comsubtotal" class="form-control" readonly>
+            </div>
+            <div class="col-md-2">
+                <label for="comtotal" class="form-label">Total</label>
+                <input type="number" step="0.01" name="comtotal" class="form-control" readonly>
+            </div>
+        </div>
+
+        <div class="text-end mt-4">
+            <button type="submit" class="btn btn-primary">Guardar Compra</button>
+        </div>
+    </form>
+</div>
+
+<!-- Modal de productos -->
+<div class="modal fade" id="modalAgregarProducto" tabindex="-1" aria-labelledby="modalAgregarProductoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalAgregarProductoLabel">Seleccionar Producto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Precio</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for articulo in lista_articulos %}
+            <tr>
+              <td>{{ articulo.descripcion_articulo }}</td>
+              <td>{{ articulo.costo }}</td>
+              <td>
+                <button type="button" class="btn btn-sm btn-primary" onclick="mostrarModalTallas({{ articulo.idarticulo }})">
+                  Añadir
+                </button>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de tallas dinámico -->
+<div class="modal fade" id="modalTallas" tabindex="-1" aria-labelledby="modalTallasLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTallasLabel">Seleccionar Tallas</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="modalTallasContent">
+        <!-- Se carga por AJAX -->
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock contenido %}
+
+{% block script %}
+<script>
+  function mostrarModalTallas(idarticulo) {
+    fetch(`/compras/cargar-tallas/${idarticulo}/`)
+      .then(response => response.text())
+      .then(html => {
+        document.getElementById('modalTallasContent').innerHTML = html;
+        const modalTallas = new bootstrap.Modal(document.getElementById('modalTallas'));
+        modalTallas.show();
+      });
+  }
+
+  function agregarProductoConTallas(productoId, productoNombre, precioUnitario, tallasSeleccionadas) {
+    tallasSeleccionadas.forEach(talla => {
+      const cantidad = parseInt(talla.cantidad);
+      if (cantidad > 0) {
+        const valor = (cantidad * parseFloat(precioUnitario)).toFixed(2);
+        const fila = `
+          <tr>
+            <td>\${productoNombre}<input type="hidden" name="idarticulo[]" value="\${productoId}"></td>
+            <td>\${talla.nombre}<input type="hidden" name="talla[]" value="\${talla.id}"></td>
+            <td><input type="number" name="precio_unitario[]" class="form-control form-control-sm" value="\${precioUnitario}" readonly></td>
+            <td><input type="number" name="valor[]" class="form-control form-control-sm" value="\${valor}" readonly>
+                <input type="hidden" name="cantidad[]" value="\${cantidad}">
+            </td>
+            <td><button type="button" class="btn btn-danger btn-sm" onclick="this.closest('tr').remove()"><i class="fas fa-trash-alt"></i></button></td>
+          </tr>
+        `;
+        document.querySelector('#com_detalleProductosTable tbody').insertAdjacentHTML('beforeend', fila);
+      }
+    });
+    bootstrap.Modal.getInstance(document.getElementById('modalTallas')).hide();
+  }
+</script>
+{% endblock script %}

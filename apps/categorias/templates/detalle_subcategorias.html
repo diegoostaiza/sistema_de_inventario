@@ -1,0 +1,23 @@
+<div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header bg-light">
+            <h5 class="modal-title text-dark font-weight-bold">
+                <i class="fas fa-eye text-secondary mr-2"></i> Subcategorías de: {{ categoria.descripcion_categoriaarticulo }}
+            </h5>
+            <button class="close" type="button" data-dismiss="modal" aria-label="close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            {% if subcategorias %}
+                <ul class="list-group">
+                    {% for sub in subcategorias %}
+                        <li class="list-group-item">{{ sub.descripcion_subcategoriaarticulo }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">No hay subcategorías registradas para esta categoría.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>

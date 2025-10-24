@@ -1,0 +1,75 @@
+{% extends "inventario_principal/base.html" %}
+
+{% block titulo %}Reporte de Compras{% endblock titulo %}
+
+{% block contenido %}
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-primary text-white d-flex align-items-center">
+        <i class="fas fa-book-open mr-2"></i>
+        <span class="font-weight-bold h5 mb-0">Consultar Reporte de Compras</span>
+    </div>
+    <div class="card-body">
+        {% load crispy_forms_tags %}
+        <form id="reportForm" method="GET" action="{% url 'informe:generar_pdf_compras' 'False' %}">
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    {{ compras_filter.form.fecha_compra_desde|as_crispy_field }}
+                </div>
+                <div class="form-group col-md-3">
+                    {{ compras_filter.form.fecha_compra_hasta|as_crispy_field }}
+                </div>
+                <div class="form-group col-md-3">
+                    {{ compras_filter.form.user|as_crispy_field }}
+                </div>
+                <div class="form-group col-md-3">
+                    {{ compras_filter.form.idproveedor|as_crispy_field }}
+                </div>
+            </div>
+
+            <div class="mt-3 d-flex flex-wrap justify-content-start gap-2">
+                <button type="submit" class="btn btn-dark btn-sm btnGenerarPDF">
+                    <i class="fas fa-file-pdf"></i> Generar Reporte
+                </button>
+                <button type="button" class="btn btn-info btn-sm btnDescargarPDF">
+                    <i class="fas fa-download"></i> Descargar Reporte
+                </button>
+                <a href="{{ request.path }}" class="btn btn-warning btn-sm">
+                    <i class="fas fa-sync-alt"></i> Limpiar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock contenido %}
+
+{% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function openReportWindow(download = false) {
+            const form = document.getElementById('reportForm');
+            let url = "{% url 'informe:generar_pdf_compras' 'False' %}";
+            const params = new URLSearchParams(new FormData(form)).toString();
+
+            if (download) {
+                url = url.replace('False', 'True');
+            }
+
+            const newUrl = url + '?' + params;
+            window.open(newUrl, '_blank', 'scrollbars=yes,resizable=yes,width=800,height=600,top=100,left=100');
+        }
+
+        document.querySelector('.btnGenerarPDF').addEventListener('click', function(e) {
+            e.preventDefault();
+            openReportWindow(false);
+        });
+
+        document.querySelector('.btnDescargarPDF').addEventListener('click', function(e) {
+            e.preventDefault();
+            const form = document.getElementById('reportForm');
+            const url = "{% url 'informe:generar_pdf_compras' 'True' %}";
+            const params = new URLSearchParams(new FormData(form)).toString();
+            window.location.href = url + '?' + params;
+        });
+    });
+</script>
+{% endblock script %}

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Compras</title>
+    <style type="text/css">
+        body {
+            font-family: 'Helvetica', sans-serif;
+            margin: 0;
+            padding: 20px;
+            font-size: 12px; /* Tamaño de letra reducido */
+            color: #333;
+            background-color: #f9f9f9;
+        }
+
+        .header {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .header-table {
+            width: 100%; /* Ocupa todo el ancho disponible */
+            border-collapse: collapse; /* Elimina el espacio entre celdas */
+        }
+
+        .header-info {
+            text-align: left;
+            vertical-align: top; /* Alinea el contenido en la parte superior */
+        }
+
+        .header-info h2 {
+            margin: 0 0 -10px 0; /* Margen inferior reducido */
+            font-size: 19px; /* Tamaño de letra más grande */
+            color: #2c3e50; /* Color oscuro y profesional */
+            font-weight: bold; /* Texto en negrita */
+        }
+
+        .header-info p {
+            margin: -10px 0; /* Margen más reducido entre los párrafos */
+            font-size: 12px; /* Tamaño de letra reducido */
+            color: #555;
+            line-height: 1.2; /* Reduce el espacio entre líneas */
+        }
+
+        .header-logo {
+            text-align: right; /* Alinea el logo a la derecha */
+            vertical-align: top; /* Alinea el logo en la parte superior */
+        }
+
+        .header-logo img {
+            height: 80px; /* Tamaño del logo ajustado */
+            width: auto;
+        }
+
+        .header-logo p {
+            margin: 5px 0 0 0; /* Margen reducido */
+            font-size: 11px; /* Tamaño de letra reducido */
+            color: #555;
+            text-align: right; /* Alinea el texto a la derecha */
+        }
+
+        h1 {
+            text-align: center;
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 18px; /* Tamaño de letra reducido */
+            color: #2c3e50;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 8px; /* Espaciado reducido */
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: #2c3e50;
+            color: #fff;
+            font-weight: bold;
+            font-size: 12px; /* Tamaño de letra reducido */
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .fechas {
+            margin-bottom: 10px; /* Reduje el margen inferior */
+            text-align: left; /* Alineación a la izquierda */
+            font-size: 12px; /* Tamaño de letra reducido */
+            color: #555;
+            padding-left: 10px; /* Elimina el padding izquierdo */
+        }
+
+        .fechas p {
+            margin: 0; /* Elimina el margen del párrafo */
+        }
+
+        /* Estilos específicos para la segunda tabla */
+        table.compras {
+            border: 1px solid #ddd; /* Agrega un borde a la tabla */
+        }
+
+        table.compras th, table.compras td {
+            border: 1px solid #ddd; /* Agrega bordes a las celdas */
+        }
+
+        .total-row {
+            background-color: #2c3e50;
+            color: #fff;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <table class="header-table">
+            <tr>
+                <td class="header-info">
+                    <h2>{{ empresa.nombrecomercial }}</h2> <!-- Nombre comercial como h2 -->
+                    <p><strong>RAZÓN SOCIAL:</strong> {{ empresa.razonsocial }}</p>
+                    <p><strong>RUC:</strong> {{ empresa.RUC }}</p>
+                    <p><strong>Teléfono:</strong> {{ empresa.telefono_empresa }}</p>
+                    <p><strong>Email:</strong> {{ empresa.correo_empresa }}</p>
+                </td>
+                <td class="header-logo">
+                    {% if logo_url %}
+                        <img src="{{ logo_url }}" alt="Logo de la empresa" />
+                    {% endif %}
+                    <p><strong>Generado el:</strong> {{ now }}</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <h1>REPORTE DE COMPRAS</h1>
+    
+   
+    <table class="compras">
+        <thead>
+            <tr>
+                <th>NRO</th>
+                <th>FECHA</th>
+                <th>PROVEEDOR</th>
+                <th>RUC</th>
+                <th>SUBTOTAL</th>
+                <th>IVA</th>
+                <th>TOTAL</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if compras and totales %}
+                {% for com in compras %}
+                    <tr>
+                        <td>{{ com.idcompra }}</td>
+                        <td>{{ com.fecha_compra | date:"d/m/Y" }}</td>
+                        <td>{{ com.idproveedor }}</td>
+                        <td>{{ com.idproveedor.ruc_proveedor }}</td>
+                        <td>$ {{ com.subtotal }}</td>
+                        <td>$ {{ com.valoriva }}</td>
+                        <td>$ {{ com.total }}</td>                                                                      
+                    </tr>
+                {% endfor %}
+                <!-- Fila para el total -->
+                <tr class="total-row">
+                    <td colspan="4"><strong>TOTAL GENERAL</strong></td>
+                    <td>$ {{ totales.subtotal_general }}</td>
+                    <td>$ {{ totales.iva_general }}</td>
+                    <td>$ {{ totales.total_general }}</td>
+                </tr>
+            {% else %}
+                <tr class="sin-registros">
+                    <td colspan="7"><strong>NO SE ENCONTRARON RESULTADOS.</strong></td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</body>
+</html>

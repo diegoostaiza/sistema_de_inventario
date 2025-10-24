@@ -1,0 +1,80 @@
+{% extends "inventario_principal/base.html" %}
+
+{% block titulo %}Reporte de Inventario{% endblock titulo %}
+
+{% block contenido %}
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-primary text-white d-flex align-items-center">
+        <i class="fas fa-boxes mr-2"></i>
+        <span class="font-weight-bold h5 mb-0">Listado de Artículos</span>
+    </div>
+    <div class="card-body">
+        <div class="mb-3">
+            <button class="btn btn-dark btn-sm btnGenerarPDF">
+                <i class="fas fa-file-pdf"></i> Ver PDF
+            </button>
+            <button class="btn btn-info btn-sm btnDescargarPDF">
+                <i class="fas fa-download"></i> Descargar PDF
+            </button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover table-sm">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Código</th>
+                        <th>Artículo</th>
+                        <th>Categoría</th>
+                        <th>Estado</th>
+                        <th>Stock</th>
+                        <th>Precio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for articulo in articulos %}
+                        <tr>
+                            <td>{{ articulo.codigo_articulo }}</td>
+                            <td>{{ articulo.descripcion_articulo }}</td>
+                            <td>{{ articulo.idcategoriaarticulo.nombre }}</td>
+                            <td>{{ articulo.estado_articulo }}</td>
+                            <td>{{ articulo.stock_actual }}</td>
+                            <td>${{ articulo.precio_unitario }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No hay artículos registrados.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+
+{% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        function openReportWindow(download = false) {
+            let url = "{% url 'informe:generar_pdf_inventarios' 'False' %}";
+            if (download) {
+                url = url.replace('False', 'True');
+                window.location.href = url;
+            } else {
+                window.open(url, '_blank',
+                    'scrollbars=yes,resizable=yes,width=800,height=600,top=100,left=100');
+            }
+        }
+
+        document.querySelector('.btnGenerarPDF').addEventListener('click', function (e) {
+            e.preventDefault();
+            openReportWindow(false);
+        });
+
+        document.querySelector('.btnDescargarPDF').addEventListener('click', function (e) {
+            e.preventDefault();
+            openReportWindow(true);
+        });
+    });
+</script>
+{% endblock script %}

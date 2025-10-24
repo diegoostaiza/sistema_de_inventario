@@ -1,0 +1,165 @@
+{% extends "inventario_principal/base.html" %}
+{% load static %}
+
+{% block titulo %}Listado de prendas{% endblock titulo %}
+
+{% block extra_links %}
+    <link rel="stylesheet" href="{% static 'css/pages/detail_articulos.css' %}">
+{% endblock extra_links %}
+
+{% block contenido %}
+    <!-- Page Heading -->
+    <div class="mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Inventario Inicial</h1>
+    </div>
+
+    <!-- Card para Filtrar -->
+  
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center card-csslist">
+            <h6 class="m-0 font-weight-bold text-primary h5"><i class="fas fa-list mr-2"></i>Lista de prendas</h6>
+        </div>
+        <div class="card-body">
+            <!-- Spinner de Bootstrap (inicialmente visible) -->
+            <div id="spinner" style="bottom: 10px; left: 10px;">
+                <button class="btn btn-primary" type="button" disabled>
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Cargando...
+                </button>
+            </div>
+
+            <!-- Contenido de la lista (inicialmente oculto) -->
+            <div id="list-content" style="display: none;">
+                <div class="d-flex justify-content-between mb-3">
+                    <!-- Espacio separador (puedes ajustar el tamaño según tus preferencias) -->
+                    <div style="width: 20px;"></div>
+            
+                    <!-- Botón "Nuevo" con la clase ml-auto para alinear a la derecha -->
+                    {% if perms.articulos.crear_productos %}
+                        <a href="{% url 'articulos:registrar_articulos' %}" class="btn btn-sm btn-primary rounded-pill ml-auto">
+                            <i class="fas fa-plus-circle"></i> Registrar prendas
+                        </a>
+                    {% endif %}
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Imagen</th>
+                                <th>Nombre</th>
+                                <th>Categoría</th>
+                                <th>Costo</th>
+                                <th>P./Venta</th>
+                                <th>Stock</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Puedes agregar o quitar filas según tus necesidades -->
+                            {% if articulos %}
+                                {% for art in articulos %}
+                                    <tr>
+                                        <td>{{art.codigoarticulo}}</td>
+                                        <td class="text-center">
+                                            {% if art.imagen %}
+                                                <img src="{{ art.imagen.url }}" alt="{{ art.descripcion_articulo }}" style="max-width: 60px; max-height: 60px;">
+                                            {% else %}
+                                                <i class="fas fa-box-open" style="font-size: 20px; color: #D2B48C;">
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ art.descripcion_articulo }}</td>
+                                        <td>{{ art.idsubcategoriaarticulo }}</td>
+                                        <td class="text-center">$ {{ art.costo }}</td>
+                                        <td class="text-center">$ {{ art.precioventa }}</td>
+                                        <td style="text-align: center;">
+                                            <span class="badge {% if art.stock >= art.stock_minimo and art.stock != 0 %}badge-success{% elif art.stock < art.stock_minimo and art.stock != 0 %}badge-warning{% else %}badge-danger{% endif %}" style="color: white; font-weight: bold; font-size: 13px;">
+                                                {{ art.stock }}
+                                            </span>
+                                        </td>     
+                                        <td style="text-align: center;">
+                                            <span class="badge {% if art.estado_articulo == 1 %}badge-success{% else %}badge-danger{% endif %}" style="color: white; font-weight: bold; font-size: 13px;">
+                                                {% if art.estado_articulo == 1 %}
+                                                    Activo
+                                                {% else %}
+                                                    Inactivo
+                                                {% endif %}
+                                            </span>
+                                        </td>                                                                   
+                                        <td class="text-center">
+                                            <div class="d-flex">
+                                                <!-- Botón para Ver -->
+                                                {% if perms.articulos.ver_productos %}
+                                                    <button type="button" class="btn btn-info btn-sm mr-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver" onclick="abrir_modal_articulo('{% url 'articulos:detalle_articulos' art.idarticulo %}')">
+                                                        <i class="fas fa-eye fa-sm"></i>
+                                                    </button>
+                                                {% endif %}
+
+                                                <!-- Botón para Editar -->
+                                                {% if perms.articulos.editar_productos %}
+                                                    <a href="{% url 'articulos:editar_articulos' art.idarticulo %}" class="btn btn-warning btn-sm mr-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Editar">
+                                                        <i class="fas fa-edit fa-sm"></i>
+                                                    </a>
+                                                {% endif %}
+
+                                                <!-- Botón para Eliminar -->
+                                                {% if perms.articulos.eliminar_productos %}
+                                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar" onclick="Eliminar_Articulos({{ art.idarticulo }})">
+                                                        <i class="fas fa-trash-alt fa-sm"></i>
+                                                    </button>
+                                                {% endif %}
+                                            </div>
+                                        </td>                                                              
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+                            <!-- ... -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal detalle articulo -->
+    <div class="modal fade" id="articulo" role="dialog">
+    </div>
+{% endblock contenido %}
+
+{% block script %}
+    <!-- SweetAlert para confirmar la eliminación -->
+    <script>
+        function Eliminar_Articulos(id){
+            Swal.fire({
+                title: "¿Estás seguro de eliminar?",
+                text: "Esta acción no se puede deshacer",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Aceptar",
+                cancelButtonText: "Cancelar",
+                confirmButtonColor: "#4169E1"
+            })
+            .then(function(result){
+                if(result.isConfirmed){
+                    window.location.href = "/productos/eliminar_productos/"+id+"/"
+                }
+            })
+        }
+    </script>
+
+    <!-- Abrir Modal detalle articulo -->
+    <script type="text/javascript">
+        var $ =jQuery.noConflict();
+        function abrir_modal_articulo(url){
+            $('#articulo').load(url, function(){
+                $(this).modal('show');
+            })
+        }
+    </script>
+
+
+    
+{% endblock script %}

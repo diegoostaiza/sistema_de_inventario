@@ -1,0 +1,161 @@
+{% load static %}
+<!-- Sidebar -->
+<ul class="navbar-nav bg-dark sidebar sidebar-dark accordion" id="accordionSidebar"style="background-color: #000000 !important;">
+
+    <!-- Sidebar - Brand -->
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'dashboard:inicio' %}">
+        <div class="sidebar-brand-icon">
+    <img src="{% static 'img/logoOtavalo.jpg' %}" alt="Logo Otavalo" width="60" height="60" style="border-radius: 50%; margin-left: 10px;">
+</div>
+
+        <div class="sidebar-brand-text mx-3">Inventario Otavalo</div>
+    </a>
+ 
+    <!-- Divider -->
+    <hr class="sidebar-divider my-0">
+
+    <!-- Nav Item - Dashboard -->
+  
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    {% if perms.clientes.ver_clientes or perms.clientes.crear_clientes or perms.clientes.editar_clientes or perms.clientes.eliminar_clientes or perms.proveedores.ver_proveedores or perms.proveedores.crear_proveedores or perms.proveedores.editar_proveedores or perms.proveedores.eliminar_proveedores %}
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseResponsables"
+           aria-expanded="false" aria-controls="collapseResponsables">
+            <i class="fas fa-fw fa-users"></i>
+            <span>Responsables</span>
+        </a>
+        <div id="collapseResponsables" class="collapse" aria-labelledby="headingResponsables" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                {% if perms.clientes.ver_clientes or perms.clientes.crear_clientes or perms.clientes.editar_clientes or perms.clientes.eliminar_clientes %}
+                    <a class="collapse-item" href="{% url 'clientes:listado_clientes' %}">Clientes</a>
+                {% endif %}
+                {% if perms.proveedores.ver_proveedores or perms.proveedores.crear_proveedores or perms.proveedores.editar_proveedores or perms.proveedores.eliminar_proveedores %}
+                    <a class="collapse-item" href="{% url 'proveedores:listado_proveedores' %}">Proveedores</a>
+                {% endif %}
+            </div>
+        </div>
+    </li>
+{% endif %}
+
+
+
+
+
+
+
+    {% if perms.articulos.ver_productos or perms.articulos.crear_productos or perms.articulos.editar_productos or perms.articulos.eliminar_productos or perms.categorias.ver_categorias or perms.categorias.crear_categorias or perms.inventario.editar_categorias or perms.categorias.eliminar_categorias or perms.lotes.ver_lotes or perms.lotes.editar_lotes %}
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseArticulos"
+            aria-expanded="true" aria-controls="collapseTwo">
+                <i class="fas fa-fw fa-cubes"></i>
+                <span>Categoría</span>
+            </a>
+            <div id="collapseArticulos" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    {% if perms.categorias.ver_categorias or perms.categorias.crear_categorias or perms.categorias.editar_categorias or perms.categorias.eliminar_categorias %}
+                        <a class="collapse-item" href="{% url 'categorias:listado_categorias' %}">Categorías</a>
+                    {% endif %}  
+                </div>
+            </div>
+        </li>
+    {% endif %}
+    
+
+    {% if perms.compras.ver_compras or perms.compras.crear_compras or perms.ventas.ver_ventas or perms.ventas.crear_ventas %}
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseExistencias"
+            aria-expanded="true" aria-controls="collapseTwo">
+                <i class="fas fa-fw fa-exchange-alt"></i>
+                <span>Movimientos</span>
+            </a>
+            <div id="collapseExistencias" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                     {% if perms.articulos.ver_productos or perms.articulos.crear_productos or perms.articulos.editar_productos or perms.articulos.eliminar_productos %}
+                        <a class="collapse-item" href="{% url 'articulos:listado_articulos' %}">Inventario Inicial</a>
+                    {% endif %}
+                    {% if perms.compras.ver_compras or perms.compras.crear_compras %}
+                        <a class="collapse-item" href="{% url 'compras:listado_compras' %}">Compras</a>
+                    {% endif %}
+
+                    {% if perms.ventas.ver_ventas or perms.ventas.crear_ventas %}
+                        <a class="collapse-item" href="{% url 'ventas:listado_ventas' %}">Ventas</a>
+                    {% endif %}
+                </div>
+            </div>
+        </li>
+    {% endif %}
+
+    {% if perms.usuarios.ver_usuarios or perms.usuarios.crear_usuarios or perms.usuarios.editar_usuarios or perms.usuarios.eliminar_usuarios or perms.usuarios.ver_roles or perms.usuarios.crear_roles or perms.usuarios.editar_roles or perms.usuarios.eliminar_roles %}
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUsuarios"
+            aria-expanded="true" aria-controls="collapseTwo">
+                <i class="fas fa-fw fa-users"></i>
+                <span>Registro de Usuarios</span>
+            </a>
+            <div id="collapseUsuarios" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    {% if perms.usuarios.ver_roles or perms.usuarios.crear_roles or perms.usuarios.editar_roles or perms.usuarios.eliminar_roles %}
+                        <a class="collapse-item" href="{% url 'roles:roles' %}">Roles</a>
+                    {% endif %} 
+
+                    {% if perms.usuarios.ver_usuarios or perms.usuarios.crear_usuarios or perms.usuarios.editar_usuarios or perms.usuarios.eliminar_usuarios %}
+                        <a class="collapse-item" href="{% url 'usuarios:listado_usuarios' %}">Usuarios</a>
+                    {% endif %}
+                </div>
+            </div>
+        </li>
+    {% endif %}
+
+    {% if perms.empresa.generar_reportes %}
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseReportes"
+            aria-expanded="true" aria-controls="collapseTwo">
+                <i class="fas fa-fw fa-file-alt"></i>
+                <span>Reportes</span>
+            </a>
+            <div id="collapseReportes" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <a class="collapse-item" href="{% url 'informe:reporte_inventario' %}">Reporte de Inventario</a>
+                    <a class="collapse-item" href="{% url 'informe:reporte_ventas' %}">Reporte de Ventas</a>
+                    <a class="collapse-item" href="{% url 'informe:reporte_compras' %}">Reporte de Compras</a>
+                    <a class="collapse-item" href="{% url 'informe:reporte_kardex' %}">Reporte de Kardex</a>
+                </div>
+            </div>
+        </li>
+    {% endif %}
+
+    {% if perms.empresa.editar_empresa %}
+     <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseReportes2"
+            aria-expanded="true" aria-controls="collapseTwo">
+             <i class="fas fa-fw fa-cog"></i>
+                <span>Empresa</span>
+            </a>
+            <div id="collapseReportes2" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <a class="collapse-item" href="{% url 'empresa:configuracion' %}">Datos de Empresa</a>
+                    <a class="collapse-item" href="{% url 'empresa:listado_provincias' %}">Registro de ciudad</a>
+                   
+                </div>
+            </div>
+        </li>
+       
+    {% endif %} 
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'authentication:exit' %}">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Salir</span></a>
+        </li>
+    
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Sidebar Toggler (Sidebar) -->
+    <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
+</ul>
+<!-- End of Sidebar -->

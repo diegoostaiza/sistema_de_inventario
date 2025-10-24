@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Iniciar Sesión - Almacén Otavalo</title>
+    {% load static %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap & FontAwesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" href="{% static 'img/logoOtavalo.jpg' %}">
+
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .login-container .logo {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-container .logo img {
+            width: 80px;
+        }
+
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .form-label {
+            font-weight: 500;
+        }
+
+        .form-control {
+            background-color: #111;
+            border: 1px solid #444;
+            color: #fff;
+        }
+        .form-control::placeholder{
+           
+            color: #fff;
+        }
+
+        .form-control:focus {
+            background-color: #111;
+            color: #fff;
+            border-color: #0d6efd;
+            box-shadow: none;
+        }
+
+        .btn-primary {
+            background-color: #0d6efd;
+            border: none;
+            font-weight: bold;
+        }
+
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .forgot-password a {
+            color: #0d6efd;
+            text-decoration: none;
+        }
+
+        .alert {
+            font-size: 0.9rem;
+        }
+
+        .input-icon {
+            position: relative;
+        }
+
+        .input-icon i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .input-icon input {
+            padding-left: 35px;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <img src="{% static 'img/logoOtavalo.jpg' %}" alt="Logo Otavalo">
+        </div>
+        <h2>Iniciar Sesión</h2>
+
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                Usuario o contraseña incorrectos. Inténtalo nuevamente.
+            </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="id_username" class="form-label">Usuario</label>
+                <div class="input-icon">
+                    <i class="fas fa-user"></i>
+                    <input type="text"  class=" text-white form-control" id="id_username" name="username" placeholder="Usuario" required>
+                </div>
+                {% if form.username.errors %}
+                    <div class="text-danger small">{{ form.username.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label for="id_password" class="form-label">Contraseña</label>
+                <div class="input-icon">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" class="form-control" id="id_password" name="password" placeholder="Contraseña" required>
+                </div>
+                {% if form.password.errors %}
+                    <div class="text-danger small">{{ form.password.errors }}</div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+            </button>
+
+            <div class="forgot-password mt-3">
+                <a href="{% url 'authentication:reset_password' %}">¿Olvidaste tu contraseña?</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
